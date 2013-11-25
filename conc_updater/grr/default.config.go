@@ -20,19 +20,14 @@
  **
  ******************************************************************************
  */
+ 
+package grr
 
-var grrStrings = 
-{
-  // Default localization just uses the incoming string.
-  // See reader-example.js for actual strings
-}
+// * For connections using 'localhost', leave <host> empty
+// * Don't change the 'charset' and 'time_zone' parameters, unless
+//   you really know what you're doing.
 
-var defaultDateTimeFormatter = function(date, sameDay)
-{
-	if (sameDay)
-		return date.toLocaleTimeString();
-	else
-		return date.toLocaleDateString();
-};
+// Uncomment the following:
 
-var dateTimeFormatter = defaultDateTimeFormatter;
+// var DatabaseDriver string = "mysql"
+// var DatabaseDataSource string = "<username>:<password>@<host>/<database>?charset=utf8&time_zone='+0:00'"

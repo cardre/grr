@@ -36,6 +36,7 @@ var supportedRSS2TimeFormats = []string {
   "Mon, 02 Jan 2006 15:04:05 Z",
   "Mon, 02 Jan 2006 15:04:05",
   "Mon, 2 Jan 2006 15:04:05 -0700",
+  "Mon, 2 Jan 2006 15:04:05",
 }
 
 type rss2Feed struct {
@@ -45,6 +46,8 @@ type rss2Feed struct {
   Updated string `xml:"channel>lastBuildDate"`
   Link []*rssLink `xml:"channel>link"`
   Entry []*rss2Entry `xml:"channel>item"`
+  UpdatePeriod string `xml:"channel>updatePeriod"`
+  UpdateFrequency int `xml:"channel>updateFrequency"`
 }
 
 type rss2Entry struct {
@@ -75,6 +78,23 @@ func (nativeFeed *rss2Feed) Marshal() (feed Feed, err error) {
     Description: nativeFeed.Description,
     Updated: updated,
     WWWURL: linkUrl,
+  }
+
+  if nativeFeed.UpdateFrequency != 0 && nativeFeed.UpdatePeriod != "" {
+    updateFrequency := nativeFeed.UpdateFrequency
+    updatePeriod := strings.ToLower(nativeFeed.UpdatePeriod)
+
+    if updatePeriod == "hourly" {
+      feed.HourlyUpdateFrequency = 1.0 / float32(updateFrequency)
+    } else if updatePeriod == "weekly" {
+      feed.HourlyUpdateFrequency = (24.0 * 7.0) / float32(updateFrequency)
+    } else if updatePeriod == "monthly" {
+      feed.HourlyUpdateFrequency = (24.0 * 30.42) / float32(updateFrequency)
+    } else if updatePeriod == "yearly" {
+      feed.HourlyUpdateFrequency = (24.0 * 365.25) / float32(updateFrequency)
+    } else { // if updatePeriod == "daily" {
+      feed.HourlyUpdateFrequency = 24.0 / float32(updateFrequency)
+    }
   }
 
   if nativeFeed.Entry != nil {
@@ -127,6 +147,14 @@ func parseRSS2Time(timeSpec string) (time.Time, error) {
   if timeSpec != "" {
     if parsedTime, err := parseTime(supportedRSS2TimeFormats, timeSpec); err == nil {
       return parsedTime, err
+    }
+
+    // HACK territory
+    // GMT/UTC as TZ code are OK
+    if strings.HasSuffix(timeSpec, " GMT") || strings.HasSuffix(timeSpec, " UTC") {
+      if parsedTime, err := time.Parse("Mon, 2 Jan 2006 15:04:05 MST", timeSpec); err == nil {
+        return parsedTime.UTC(), nil
+      }
     }
 
     // FIXME

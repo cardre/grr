@@ -21,18 +21,10 @@
  ******************************************************************************
  */
 
-var grrStrings = 
-{
-  // Default localization just uses the incoming string.
-  // See reader-example.js for actual strings
+package main
+
+import "./grr"
+
+func main() {
+  grr.Crawl()
 }
-
-var defaultDateTimeFormatter = function(date, sameDay)
-{
-	if (sameDay)
-		return date.toLocaleTimeString();
-	else
-		return date.toLocaleDateString();
-};
-
-var dateTimeFormatter = defaultDateTimeFormatter;
