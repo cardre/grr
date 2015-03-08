@@ -61,6 +61,10 @@ abstract class FeedParser
 
     libxml_use_internal_errors(true);
 
+    // CD - check if invalid first line
+    $document = str_replace('encoding="UTF-8"?><','encoding="UTF-8"?>
+<',$document);
+
     try
     {
       $xmlDocument = @new SimpleXMLElement($document);
@@ -81,7 +85,7 @@ abstract class FeedParser
         {
           // PCDATA Invalid char value
 
-          $document = preg_replace('/[\x00-\x1f\x80-\xff]/', '', $document);
+          $document = preg_replace('/[\x1e-\x1f\x80-\xff]/', '', $document);
 
           // Reparse the document
 
