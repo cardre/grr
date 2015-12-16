@@ -136,6 +136,7 @@ CREATE TABLE `feeds` (
   `last_built` datetime DEFAULT NULL,
   `last_updated` datetime NOT NULL,
   `next_update` datetime DEFAULT NULL,
+  `ignored` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_feeds_feed_hash` (`feed_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

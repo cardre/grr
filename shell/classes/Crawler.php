@@ -36,6 +36,7 @@ class Crawler
   private $secondsSpentParsing;
   private $secondsSpentStaging;
   private $secondsSpentWriting;
+  private $secondsSpentCleaningUp;
 
   private function stage($feed, $feedId, $lastUpdated)
   {
@@ -364,6 +365,7 @@ class Crawler
             UNIX_TIMESTAMP(last_updated) last_updated,
             UNIX_TIMESTAMP(next_update) next_update
        FROM feeds
+      WHERE ignored = 0
              ";
 
     echo "Starting at ".date("m/d/Y H:i:s", $this->started)."\n";
