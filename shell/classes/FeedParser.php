@@ -195,12 +195,19 @@ abstract class FeedParser
     curl_setopt($curlSession, CURLOPT_BINARYTRANSFER, true);
     curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($curlSession, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($curlSession, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($curlSession, CURLOPT_MAXREDIRS, 2);
     curl_setopt($curlSession, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)"); 
 
 
     $content = @curl_exec($curlSession);
     $effectiveUrl = @curl_getinfo($curlSession, CURLINFO_EFFECTIVE_URL);
+
+    // CD - DEBUG START
+    //print ("  effectiveUrl = " ) ; print_r ($effectiveUrl) ; print ("\n") ;
+    //print ("       content = " ) ; print_r ($content) ; print ("\n") ;
+    //print ("   curlSession = " ) ; var_dump ($curlSession) ; print ("\n") ;
+    // CD - DEBUG END
 
     $errorCode = curl_errno($curlSession);
     $errorMessage = curl_error($curlSession);
