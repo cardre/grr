@@ -215,7 +215,7 @@ abstract class FeedParser
     curl_close($curlSession);
 
     if ($errorCode != CURLE_OK)
-      throw new Exception("Download error", FeedParser::ERROR_DOWNLOAD);
+      throw new Exception("Download error ($errorCode)", FeedParser::ERROR_DOWNLOAD);
 
     if ($effectiveUrl)
       $url = $effectiveUrl; // Use the final redirected URL
