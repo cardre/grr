@@ -55,14 +55,19 @@ class Crawler
                 VALUES (?,?,?,?,?,FROM_UNIXTIME(?),UTC_TIMESTAMP(),FROM_UNIXTIME(?),?)
                                      ");
 
+    $tmp_sha1=sha1($feed->url);
+    $tmp_getTitle=$feed->getTitle();
+    $tmp_getSummary=$feed->getSummary();
+    $tmp_getLastBuildDate=$feed->getLastBuildDate();
+    $tmp_getNextUpdate=$feed->getNextUpdate($lastUpdated);
     $stageFeedStatement->bind_param('sssssiii',
       $feed->url,
-      sha1($feed->url),
+      $tmp_sha1,
       $feed->link, 
-      $feed->getTitle(),
-      $feed->getSummary(),
-      $feed->getLastBuildDate(),
-      $feed->getNextUpdate($lastUpdated),
+      $tmp_getTitle,
+      $tmp_getSummary,
+      $tmp_getLastBuildDate,
+      $tmp_getNextUpdate,
       $this->stageId);
 
     if (!$stageFeedStatement->execute())
@@ -104,7 +109,7 @@ class Crawler
     {
       $articleGuid = $article->guid;
       $articleLinkUrl = $article->link_url;
-      $articleTitle = $article->getTitle();
+      $articleTitle = substr($article->getTitle(),0,255);
       $articleAuthor = $article->getAuthor();
       $articleSummary = $article->getSummary();
       $articleText = $article->text;
@@ -335,7 +340,8 @@ class Crawler
     if ($this->db->connect_error)
       die('Connection error: '.mysqli_connect_error());
 
-    if (!$this->db->set_charset("utf8"))
+    // CD was -> if (!$this->db->set_charset("utf8"))
+    if (!$this->db->set_charset("utf8mb4"))
       die('Connection error: '.mysqli_connect_error());
 
     if (!$this->db->query("SET time_zone = '+0:00'"))
@@ -368,7 +374,7 @@ class Crawler
       WHERE ignored = 0
              ";
 
-    echo "Starting at ".date("m/d/Y H:i:s", $this->started)."\n";
+    echo "Starting at ".date("d/m/Y H:i:s", $this->started)."\n";
     echo "Crawling and staging ...\n\n";
 
     if ($result = $this->db->query($query))
@@ -379,7 +385,7 @@ class Crawler
 
         if ($this->started < $feedRow->next_update)
         {
-          echo "  (i) Skipping download until at least ".date("m/d/Y H:i:s", $feedRow->next_update)."\n";
+          echo "  (i) Skipping download until at least ".date("d/m/Y H:i:s", $feedRow->next_update)."\n";
           continue;
         }
 
