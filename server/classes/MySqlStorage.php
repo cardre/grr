@@ -38,7 +38,8 @@ class MySqlStorage extends Storage
     if ($this->db->connect_error)
       die('Connection error: '.mysqli_connect_error());
 
-    if (!$this->db->set_charset("utf8"))
+    // CD was -> if (!$this->db->set_charset("utf8"))
+    if (!$this->db->set_charset("utf8mb4"))
       die('Connection error: '.mysqli_connect_error());
 
     if (!$this->db->query("SET time_zone = '+0:00'"))
