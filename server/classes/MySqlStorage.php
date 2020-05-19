@@ -302,11 +302,11 @@ class MySqlStorage extends Storage
     $movedItems = array();
     foreach ($subscriptionMap as $subscriptionId => &$subscription)
     {
-      $parentId = $subscription->parentId;
+      $parentId = isset($subscription->parentId) ? $subscription->parentId : null ;
       $subfeeds = &$subscriptionMap[$parentId]->subs;
 
       $subfeeds[] = &$subscription;
-      $movedItems[] = $subscription->id;
+      $movedItems[] = isset($subscription->id) ? $subscription->id : null;
     }
 
     foreach ($movedItems as $movedItem)

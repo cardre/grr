@@ -72,9 +72,7 @@ abstract class Router
 
   private function route()
   {
-    $controllerId = $_GET["c"];
-    if (!$controllerId)
-      $controllerId = $this->defaultControllerId;
+    $controllerId = isset($_GET["c"]) ? $_GET["c"] : $this->defaultControllerId;
 
     $controllerClass = $this->routes[$controllerId];
     if (!$controllerClass)
