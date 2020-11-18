@@ -112,7 +112,7 @@ class Crawler
       $articleTitle = substr($article->getTitle(),0,255);
       $articleAuthor = $article->getAuthor();
       $articleSummary = $article->getSummary();
-      $articleText = $article->text;
+      $articleText = substr($article->text,0,65535);
       $articlePublished = $article->published;
 
       if (!$stageArticleStatement->execute())
