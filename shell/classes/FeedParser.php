@@ -61,9 +61,11 @@ abstract class FeedParser
 
     libxml_use_internal_errors(true);
 
-    // CD - check if invalid first line
+    // CD - check if invalid first lines
     $document = str_replace('encoding="UTF-8"?><','encoding="UTF-8"?>
 <',$document);
+    $document = str_replace('--><rss','-->
+<rss',$document);
 
     try
     {

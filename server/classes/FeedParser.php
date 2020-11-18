@@ -61,6 +61,12 @@ abstract class FeedParser
 
     libxml_use_internal_errors(true);
 
+    // CD - check if invalid first lines
+    $document = str_replace('encoding="UTF-8"?><','encoding="UTF-8"?>
+<',$document);
+    $document = str_replace('--><rss','-->
+<rss',$document);
+
     try
     {
       $xmlDocument = @new SimpleXMLElement($document);
@@ -81,7 +87,7 @@ abstract class FeedParser
         {
           // PCDATA Invalid char value
 
-          $document = preg_replace('/[\x00-\x1f\x80-\xff]/', '', $document);
+          $document = preg_replace('/[\x1e-\x1f\x80-\xff]/', '', $document);
 
           // Reparse the document
 
@@ -191,10 +197,19 @@ abstract class FeedParser
     curl_setopt($curlSession, CURLOPT_BINARYTRANSFER, true);
     curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($curlSession, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($curlSession, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($curlSession, CURLOPT_MAXREDIRS, 2);
+    curl_setopt($curlSession, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)"); 
+
 
     $content = @curl_exec($curlSession);
     $effectiveUrl = @curl_getinfo($curlSession, CURLINFO_EFFECTIVE_URL);
+
+    // CD - DEBUG START
+    //print ("  effectiveUrl = " ) ; print_r ($effectiveUrl) ; print ("\n") ;
+    //print ("       content = " ) ; print_r ($content) ; print ("\n") ;
+    //print ("   curlSession = " ) ; var_dump ($curlSession) ; print ("\n") ;
+    // CD - DEBUG END
 
     $errorCode = curl_errno($curlSession);
     $errorMessage = curl_error($curlSession);
@@ -202,7 +217,7 @@ abstract class FeedParser
     curl_close($curlSession);
 
     if ($errorCode != CURLE_OK)
-      throw new Exception("Download error", FeedParser::ERROR_DOWNLOAD);
+      throw new Exception("Download error ($errorCode)", FeedParser::ERROR_DOWNLOAD);
 
     if ($effectiveUrl)
       $url = $effectiveUrl; // Use the final redirected URL
